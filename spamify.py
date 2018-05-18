@@ -106,6 +106,48 @@ def report_results(algo_name, time_taken, test_target, y_pred):
     print()
 
 
+def plot():
+    # plot running time
+    runtime = [0.05, 0.09, 1.2]
+    types = [1, 2, 3]
+
+    plt.bar(types, runtime, align='center')
+    plt.xticks(types, ["Naive Bayes", "Decision Tree", "K Neighbors"])
+    plt.xlabel("Algorithms")
+    plt.ylabel("Time Taken (seconds)")
+    plt.show()
+
+    # plot performance
+    data = [[0.98, 0.99, 0.97], [0.94, 0.92, 0.97], [0.91, 0.98, 0.86]]
+    df = pd.DataFrame(data, index=["Naive Bayes", "Decision Tree", "K Neighbors"],
+                      columns=pd.Index(["accuracy", "recall", "precision"]))
+    df.plot(kind='bar', figsize=(10, 5), width=0.7)
+
+    ax = plt.gca()
+    pos = []
+    for bar in ax.patches:
+        pos.append(bar.get_x()+bar.get_width()/2.)
+
+    ax.set_xticks(pos, minor=True)
+    lab = []
+    for i in range(len(pos)):
+        l = df.columns.values[i//len(df.index.values)]
+        lab.append(l)
+
+    for p in ax.patches:
+        ax.annotate(str(p.get_height()), (p.get_x()
+                                          * 1.005, p.get_height() * 1.005))
+
+    ax.set_xticklabels(lab, minor=True)
+    ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    ax.tick_params(axis='x', which='major', pad=15, size=0)
+    plt.setp(ax.get_xticklabels(), rotation=0)
+    plt.xlabel("Algorithms - Tests")
+    plt.ylabel("Scores")
+
+    plt.show()
+
+
 def main():
     # data preparation
     train_df = create_df(FEATURE_FILE_NAME_TRAIN,
@@ -118,6 +160,9 @@ def main():
     naive_bayes_algo(train_df, test_df, features)
     decision_tree(train_df, test_df, features)
     knn(train_df, test_df, features)
+
+    # plot graphs
+    plot()
 
 
 if __name__ == "__main__":
